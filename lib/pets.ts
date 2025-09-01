@@ -1,0 +1,1 @@
+export type Pet={id:string;name:string;emoji:string;price:number};export const PETS:Pet[]=[  {id:"capibara",name:"Capibara",emoji:"??",price:50},  {id:"nutria",name:"Nutria",emoji:"??",price:45},  {id:"rana",name:"Rana",emoji:"??",price:35}]; 
