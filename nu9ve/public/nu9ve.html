@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <title>Nu9ve — Bienvenida</title>
+  <style>
+    :root{
+      --ink:#1F2937;
+      --muted:#6B7280;
+      --primary:#F59E0B;
+      --radius:16px;
+      --shadow:0 8px 24px rgba(0,0,0,.12);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0}
+    body{
+      font-family:system-ui,Segoe UI,Roboto,Inter,sans-serif;
+      color:var(--ink);
+    }
+
+    .screen{display:none;min-height:100vh;padding:16px}
+    .screen.active{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;animation:fadeIn .5s ease}
+    
+    .card{
+      background:rgba(255,255,255,0.7);
+      backdrop-filter:blur(12px);
+      border-radius:var(--radius);
+      padding:24px;
+      box-shadow:var(--shadow);
+      max-width:420px;
+      margin:auto;
+    }
+    .btn{
+      appearance:none;
+      border:0;
+      border-radius:12px;
+      padding:12px 18px;
+      font-weight:600;
+      cursor:pointer;
+      background:#111;
+      color:#fff;
+      transition:transform .06s,filter .2s ease;
+    }
+    .btn:active{transform:scale(.96)}
+    .btn.primary{background:linear-gradient(180deg,#F7B647,#F59E0B)}
+    .btn.secondary{background:#eee;color:#111}
+    
+    /* ===== Carrusel habilidades ===== */
+    .carousel{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;width:100%;max-width:500px;margin-top:20px}
+    .arrow{width:44px;height:80px;display:grid;place-items:center;border-radius:12px;background:rgba(255,255,255,0.65);cursor:pointer;user-select:none;font-size:20px}
+    .arrow:hover{background:rgba(255,255,255,0.85)}
+
+    .card-skill{
+      border-radius:18px;
+      padding:20px;
+      background:rgba(255,255,255,0.7);
+      backdrop-filter:blur(10px);
+      box-shadow:var(--shadow);
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      min-height:200px;
+      animation:slideIn .3s ease;
+    }
+    .rarity{font-size:13px;color:var(--muted);text-align:left}
+    .skill-header{display:flex;align-items:center;gap:12px}
+    .skill-header .letter{font-size:32px;font-weight:800}
+    .muted{color:var(--muted);font-size:14px}
+    .row{display:flex;gap:8px;justify-content:space-between;margin-top:auto}
+
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+
+    /* ===== Roadmap ===== */
+.path{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:14px;
+  margin-top:20px;
+  width:100%;
+  max-width:700px;
+}
+.lvl{
+  position:relative;
+  background:rgba(255,255,255,0.7);
+  backdrop-filter:blur(10px);
+  border-radius:14px;
+  box-shadow:var(--shadow);
+  padding:12px;
+  text-align:center;
+  cursor:pointer;
+  transition:.2s;
+}
+.lvl:hover{transform:translateY(-3px)}
+.lvl.done{outline:2px solid #22c55e}
+.lvl.lock{pointer-events:none}
+.lvl.lock::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:rgba(255,255,255,0.75) url('/assets/ui/cloud.png') center/60px no-repeat;
+  border-radius:14px;
+}
+/* ===== Pantalla lección ===== */
+.lesson-card{
+  background:rgba(255,255,255,0.7);
+  backdrop-filter:blur(10px);
+  border-radius:16px;
+  box-shadow:var(--shadow);
+  padding:16px;
+  width:min(820px, 100%);
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.lesson-top{display:flex;align-items:center;gap:8px;justify-content:space-between}
+.badge{border-radius:999px;padding:6px 10px;background:#fff9;border:1px solid #eee;font-size:12px}
+.choices{display:flex;gap:8px;flex-wrap:wrap}
+.choice{padding:10px 12px;border:1px solid #E5E7EB;border-radius:12px;background:#fff;cursor:pointer}
+.choice[aria-pressed="true"]{outline:2px solid var(--primary)}
+.feedback{display:none;border-radius:12px;padding:10px}
+.feedback.ok{display:block;background:#DCFCE7;color:#065F46}
+.feedback.bad{display:block;background:#FEE2E2;color:#991B1B}
+.video-wrap{
+  position:relative; width:100%; padding-top:56.25%;
+  border-radius:14px; overflow:hidden; background:#000;
+}
+.video-wrap iframe, .video-wrap video{position:absolute; inset:0; width:100%; height:100%}
+
+
+  </style>
+</head>
+<body>
+  <!-- ======================= PANTALLA BIENVENIDA ======================= -->
+  <section id="screen-welcome" class="screen active" style="background:url('/assets/ui/bg_welcome.png') center/cover no-repeat fixed;">
+    <div class="card">
+      <img src="/assets/capy/avatar.png" alt="Capy" width="72" height="72" style="border-radius:12px;margin-bottom:12px" onerror="this.outerHTML='🦫'">
+      <h2>¡Bienvenido a <b>Nu9ve</b>!</h2>
+      <p class="muted">Entrena tus <b>habilidades blandas</b> en un viaje con capibaras.  
+      Inicia sesión para guardar tu progreso.</p>
+      <div style="margin-top:14px;display:flex;gap:10px;justify-content:center">
+        <button id="btnGoogle" class="btn primary">🔑 Iniciar con Google</button>
+        <button id="btnGuest" class="btn secondary">Invitado</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= PANTALLA SELECCIÓN HABILIDADES (Carrusel) ======================= -->
+  <section id="screen-skills" class="screen" style="background:url('/assets/ui/bg_skills.png') center/cover no-repeat fixed;">
+    <h2>Elige tu carta</h2>
+    <div class="carousel">
+      <div id="arrowLeft" class="arrow">◀</div>
+      <div id="skillCard" class="card-skill"></div>
+      <div id="arrowRight" class="arrow">▶</div>
+    </div>
+    <div style="margin-top:14px" class="muted"><span id="indexNow">1</span> / <span id="indexTotal">9</span> habilidades</div>
+    <button id="btnBackWelcome" class="btn secondary" style="margin-top:20px">⬅ Volver</button>
+   
+
+  </section>
+ <!-- ======================= PANTALLA ROADMAP (Parte 3) ======================= -->
+<section id="screen-roadmap" class="screen">
+  <button id="btnBackSkills" class="btn secondary" style="align-self:flex-start">⬅ Volver</button>
+  <h2 id="roadmapTitle">Habilidad</h2>
+  <div id="levelsPath" class="path"></div>
+</section>
+  <!-- ======================= PANTALLA LECCIÓN (Parte 4) ======================= -->
+<section id="screen-lesson" class="screen">
+  <div class="lesson-card">
+    <div class="lesson-top">
+      <button id="btnBackRoadmap" class="btn secondary">⬅ Volver</button>
+      <div class="badge" id="lessonMeta">Tipo</div>
+    </div>
+
+    <h2 id="lessonTitle" style="margin:6px 0">Lección</h2>
+    <p id="lessonNarrative" class="muted" style="margin:0"></p>
+
+    <div id="lessonBody"></div>
+
+    <div class="feedback" id="lessonFeedback"></div>
+
+    <div style="display:flex;gap:8px;margin-top:8px;justify-content:flex-end">
+      <button id="btnHint" class="btn secondary">💡 Pista</button>
+      <button id="btnNextLesson" class="btn primary" disabled>Siguiente</button>
+    </div>
+  </div>
+</section>
+
+
+  <!-- ======================= SCRIPTS ======================= -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAJnzIndONj1ay4aBqZwWeOrndl7NE_k9s",
+      authDomain: "nu9ve-a8bbd.firebaseapp.com",
+      projectId: "nu9ve-a8bbd",
+      storageBucket: "nu9ve-a8bbd.firebasestorage.app",
+      messagingSenderId: "946729216705",
+      appId: "1:946729216705:web:28f970e0d2746cf9058240"
+    };
+    // Fondo propio por mundo (asegúrate de subir estas imágenes)
+const WORLD_BG = {
+  "Selva": "/assets/worlds/selva.png",
+  "Montaña": "/assets/worlds/montana.png",
+  "Río": "/assets/worlds/rio.png",
+  "Playa": "/assets/worlds/playa.png",
+  "Ciudad": "/assets/worlds/ciudad.png",
+  "Mercado": "/assets/worlds/mercado.png",
+  "Biblioteca": "/assets/worlds/biblioteca.png",
+  "Laboratorio": "/assets/worlds/laboratorio.png",
+  "Café": "/assets/worlds/cafe.png",
+};
+
+// progreso por habilidad (5 niveles por curso). Inicia todo en 0.
+    const SKILLS = [
+      {title:"Comunicación", world:"Selva", color:"#F59E0B"},
+      {title:"Liderazgo", world:"Montaña", color:"#8B5CF6"},
+      {title:"Trabajo en Equipo", world:"Río", color:"#34D399"},
+      {title:"Empatía", world:"Playa", color:"#F472B6"},
+      {title:"Gestión del Tiempo", world:"Ciudad", color:"#06B6D4"},
+      {title:"Resolución de Conflictos", world:"Mercado", color:"#F43F5E"},
+      {title:"Pensamiento Crítico", world:"Biblioteca", color:"#A3E635"},
+      {title:"Negociación", world:"Laboratorio", color:"#FB923C"},
+      {title:"Creatividad", world:"Café", color:"#60A5FA"}
+    ];
+     // Construye 9 lecciones por habilidad alternando: roleplay -> quiz -> video -> ...
+function buildLessonsFor(skillTitle, world){
+  const lessons = [];
+  const youtubeIds = ["dQw4w9WgXcQ","M7lc1UVf-VE","ysz5S6PUM-U"]; // placeholder; cambia por tus IDs
+  for(let i=0;i<9;i++){
+    const n = i+1;
+    const t = i%3; // 0 roleplay, 1 quiz, 2 video
+    if(t===0){
+      lessons.push({
+        kind:"roleplay",
+        title:`${skillTitle} • Roleplay ${n}`,
+        world,
+        narrative:`Escena ${n} en ${world}. Practica ${skillTitle.toLowerCase()}.`,
+        hint:"Valida emociones y pregunta abierto.",
+        xpPerGood:10,
+        steps:[
+          { npc:"Capy: Me preocupa la misión.", replies:[
+            {text:"Te entiendo, ¿qué te preocupa?", score:+1},
+            {text:"No exageres.", score:-1}
+          ]},
+          { npc:"Capy: No sé si seré capaz.", replies:[
+            {text:"Veámoslo juntos, ¿qué necesitarías?", score:+1},
+            {text:"Entonces no lo hagas.", score:-1}
+          ]}
+        ]
+      });
+    } else if(t===1){
+      lessons.push({
+        kind:"quiz",
+        title:`${skillTitle} • Quiz ${n}`,
+        world,
+        narrative:`Pregunta clave de ${skillTitle.toLowerCase()}.`,
+        hint:"Piensa en objetivos claros y respeto.",
+        q:`¿Qué opción favorece ${skillTitle.toLowerCase()}?`,
+        opts:["Interrumpir","Escucha activa"],
+        ok:1,
+        xp:15
+      });
+    } else {
+      lessons.push({
+        kind:"video",
+        title:`${skillTitle} • Video ${n}`,
+        world,
+        narrative:`Mira este breve video sobre ${skillTitle.toLowerCase()} en ${world}.`,
+        hint:"Anota 2 aprendizajes.",
+        // Usa YouTube (iframe) o un .mp4 en /public/videos/
+        youtubeId: youtubeIds[i%youtubeIds.length], // cambia por los tuyos
+        xp:10
+      });
+    }
+  }
+  return lessons;
+}
+
+// Mapa de lecciones por índice de habilidad (se genera desde SKILLS)
+const LESSONS = SKILLS.map(sk => buildLessonsFor(sk.title, sk.world));
+const PROGRESS = new Array(SKILLS.length).fill(0);
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const $ = (s)=>document.querySelector(s);
+
+
+    let index=0;
+
+    function show(id){
+      document.querySelectorAll(".screen").forEach(el=>el.classList.remove("active"));
+      $("#"+id).classList.add("active");
+    }
+
+  function renderCard(){
+  const sk=SKILLS[index];
+  $("#skillCard").innerHTML=`
+    <div class="rarity">Carta • ${sk.world}</div>
+    <div class="skill-header">
+      <div class="letter">${sk.title[0]}</div>
+      <div>
+        <strong>${sk.title}</strong><br>
+        <span class="muted">Color: <span style="display:inline-block;width:12px;height:12px;background:${sk.color};border-radius:3px"></span></span>
+      </div>
+    </div>
+    <div class="row">
+      <button id="btnPreview" class="btn secondary">Vista previa</button>
+      <button id="btnEnter" class="btn primary">Entrar</button>
+    </div>
+  `;
+  $("#indexNow").textContent=index+1;
+  $("#indexTotal").textContent=SKILLS.length;
+
+  // conectar al roadmap (Parte 3)
+  $("#btnEnter").onclick = () => openRoadmap(index);
+  $("#btnPreview").onclick = () => alert("Vista previa de "+sk.title);
+}
+
+
+    $("#arrowLeft").onclick=()=>{index=(index-1+SKILLS.length)%SKILLS.length;renderCard();}
+    $("#arrowRight").onclick=()=>{index=(index+1)%SKILLS.length;renderCard();}
+
+    $("#btnGoogle").onclick = async ()=>{
+      try{
+        const provider = new GoogleAuthProvider();
+        await signInWithPopup(auth, provider);
+        show("screen-skills");
+        renderCard();
+      }catch(e){ alert("Error al iniciar sesión"); }
+    };
+   function openRoadmap(skillIndex){
+  const sk = SKILLS[skillIndex];
+  const doneCount = PROGRESS[skillIndex];
+
+  // Título y fondo del mundo
+  $("#roadmapTitle").textContent = `${sk.title} — ${sk.world}`;
+  const bg = WORLD_BG[sk.world];
+  $("#screen-roadmap").style.background = `url('${bg}') center/cover no-repeat fixed`;
+
+  // Render de 9 niveles
+  const container = $("#levelsPath");
+  container.innerHTML = "";
+  for (let i = 0; i < 9; i++) {
+    const lvl = document.createElement("div");
+    const isDone = i < doneCount;
+    const isUnlocked = i <= doneCount; // el siguiente al done está desbloqueado
+    lvl.className = "lvl" + (isDone ? " done" : "") + (isUnlocked ? "" : " lock");
+    lvl.innerHTML = `<strong>Nivel ${i+1}</strong><div class="muted">${isDone ? "Completado" : (isUnlocked ? "Disponible" : "Bloqueado")}</div>`;
+    if (isUnlocked) {
+      lvl.onclick = () => startLesson(skillIndex, i);
+    }
+    container.appendChild(lvl);
+  }
+
+  show("screen-roadmap");
+}
+
+let CUR = { skillIndex:0, levelIndex:0, lives:3, hintUsed:false, roleStep:0, quizAnswered:false };
+
+// Utilidad
+function setLessonFeedback(ok, msg){
+  const box = $("#lessonFeedback");
+  box.className = "feedback " + (ok ? "ok" : "bad");
+  box.textContent = msg;
+  box.style.display = "block";
+}
+function clearLessonFeedback(){
+  const box = $("#lessonFeedback");
+  box.style.display = "none";
+  box.textContent = "";
+  box.className = "feedback";
+}
+
+$("#btnBackRoadmap").onclick = ()=> show("screen-roadmap");
+
+function startLesson(skillIndex, levelIndex){
+  CUR = { skillIndex, levelIndex, lives:3, hintUsed:false, roleStep:0, quizAnswered:false };
+
+  const sk = SKILLS[skillIndex];
+  const ls = LESSONS[skillIndex][levelIndex];
+
+  // Fondo del mundo en pantalla de lección
+  const bg = WORLD_BG[sk.world];
+  $("#screen-lesson").style.background = `url('${bg}') center/cover no-repeat fixed`;
+
+  // Meta
+  $("#lessonTitle").textContent = `${sk.title} — Nivel ${levelIndex+1}`;
+  $("#lessonMeta").textContent = ls.kind.toUpperCase();
+  $("#lessonNarrative").textContent = ls.narrative || "";
+
+  // Limpia y pinta
+  clearLessonFeedback();
+  $("#btnNextLesson").disabled = true;
+  $("#btnHint").onclick = ()=>{
+    if(ls.hint){ setLessonFeedback(true, "💡 "+ls.hint); }
+    else { setLessonFeedback(true, "💡 Sin pista."); }
+  };
+
+  // Render segun tipo
+  if(ls.kind === "roleplay") renderRoleplay(ls);
+  else if(ls.kind === "quiz") renderQuiz(ls);
+  else if(ls.kind === "video") renderVideo(ls);
+
+  show("screen-lesson");
+}
+
+function completeLesson(xpGain=10){
+  // solo avanza si completas el nivel actual
+  if(CUR.levelIndex === PROGRESS[CUR.skillIndex]){
+    PROGRESS[CUR.skillIndex] = Math.min(9, PROGRESS[CUR.skillIndex] + 1);
+  }
+  // podrías sumar XP global aquí si ya manejas XP
+  // state.xp += xpGain; (si tuvieras state)
+
+  // Regresa al roadmap refrescado
+  openRoadmap(CUR.skillIndex);
+}
+
+function renderRoleplay(ls){
+  const body = $("#lessonBody");
+  body.innerHTML = "";
+  const step = ls.steps[CUR.roleStep];
+
+  const npc = document.createElement("div");
+  npc.className = "badge";
+  npc.textContent = "Capy: " + step.npc;
+  body.appendChild(npc);
+
+  const choices = document.createElement("div");
+  choices.className = "choices";
+  body.appendChild(choices);
+
+  step.replies.forEach(r=>{
+    const b=document.createElement("button");
+    b.className="choice";
+    b.textContent=r.text;
+    b.onclick=()=>{
+      if(r.score>=0){
+        setLessonFeedback(true,"¡Bien! Sumas rapport.");
+      }else{
+        setLessonFeedback(false,"Mmmm, intenta empatizar más.");
+      }
+      if(CUR.roleStep < ls.steps.length-1){
+        CUR.roleStep++;
+        setTimeout(()=>{ clearLessonFeedback(); renderRoleplay(ls); }, 450);
+      }else{
+        // fin del roleplay
+        $("#btnNextLesson").disabled = false;
+        $("#btnNextLesson").onclick = ()=> completeLesson(ls.xpPerGood ? ls.xpPerGood : 10);
+      }
+    };
+    choices.appendChild(b);
+  });
+}
+
+function renderQuiz(ls){
+  const body = $("#lessonBody");
+  body.innerHTML = `
+    <div><strong>${ls.q}</strong></div>
+    <div class="choices" id="quizChoices"></div>
+  `;
+  const wrap = $("#quizChoices");
+  ls.opts.forEach((txt, idx)=>{
+    const b = document.createElement("button");
+    b.className="choice";
+    b.textContent = txt;
+    b.setAttribute("aria-pressed","false");
+    b.onclick = ()=>{
+      if(CUR.quizAnswered) return;
+      CUR.quizAnswered = true;
+      b.setAttribute("aria-pressed","true");
+      const ok = (idx === ls.ok);
+      if(ok){
+        setLessonFeedback(true, "¡Correcto! +"+(ls.xp||15)+" XP");
+        $("#btnNextLesson").disabled = false;
+        $("#btnNextLesson").onclick = ()=> completeLesson(ls.xp||15);
+      }else{
+        setLessonFeedback(false, `Ups, era: "${ls.opts[ls.ok]}"`);
+      }
+    };
+    wrap.appendChild(b);
+  });
+}
+
+function renderVideo(ls){
+  const body = $("#lessonBody");
+  let media = "";
+  if(ls.youtubeId){
+    media = `
+      <div class="video-wrap">
+        <iframe src="https://www.youtube.com/embed/${ls.youtubeId}" frameborder="0" allowfullscreen></iframe>
+      </div>`;
+  }else if(ls.src){
+    media = `
+      <div class="video-wrap">
+        <video src="${ls.src}" controls></video>
+      </div>`;
+  }else{
+    media = `<div class="video-wrap" style="display:grid;place-items:center;color:#fff">Sin video</div>`;
+  }
+  body.innerHTML = media + `<div class="muted">Cuando termines, pulsa “Siguiente”.</div>`;
+  $("#btnNextLesson").disabled = false;
+  $("#btnNextLesson").onclick = ()=> completeLesson(ls.xp||10);
+}
+
+
+    $("#btnGuest").onclick = ()=>{show("screen-skills");renderCard();}
+    $("#btnBackWelcome").onclick = ()=> show("screen-welcome");
+    $("#btnBackSkills").onclick = () => show("screen-skills");
+    $("#btnBackRoadmap").onclick = ()=> show("screen-roadmap");
+
+
+    // inicio
+    renderCard();
+  </script>
+</body>
+</html>
